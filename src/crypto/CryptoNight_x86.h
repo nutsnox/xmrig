@@ -571,21 +571,33 @@ inline void cryptonight_single_hash(const uint8_t *__restrict__ input, size_t si
 extern "C" void cnv2_mainloop_ivybridge_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_mainloop_ryzen_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_double_mainloop_sandybridge_asm(cryptonight_ctx* ctx0, cryptonight_ctx* ctx1);
-
+void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_code);
 
 template<xmrig::Algo ALGO, xmrig::Variant VARIANT, xmrig::Assembly ASM>
 inline void cryptonight_single_hash_asm(const uint8_t *__restrict__ input, size_t size, uint8_t *__restrict__ output, cryptonight_ctx **__restrict__ ctx, uint64_t height)
 {
     constexpr size_t MEM = xmrig::cn_select_memory<ALGO>();
 
+    if ((VARIANT == xmrig::VARIANT_4) && (height != ctx[0]->generated_code_height)) {
+        V4_Instruction code[256];
+        const int code_size = v4_random_math_init(code, height);
+        v4_compile_code(code, code_size, ctx[0]->generated_code);
+        ctx[0]->generated_code_height = height;
+    }
+
     xmrig::keccak(input, size, ctx[0]->state);
     cn_explode_scratchpad<ALGO, MEM, false>(reinterpret_cast<__m128i*>(ctx[0]->state), reinterpret_cast<__m128i*>(ctx[0]->memory));
 
-    if (ASM == xmrig::ASM_INTEL) {
-        cnv2_mainloop_ivybridge_asm(ctx[0]);
+    if (VARIANT == xmrig::VARIANT_2) {
+        if (ASM == xmrig::ASM_INTEL) {
+            cnv2_mainloop_ivybridge_asm(ctx[0]);
+        }
+        else {
+            cnv2_mainloop_ryzen_asm(ctx[0]);
+        }
     }
     else {
-        cnv2_mainloop_ryzen_asm(ctx[0]);
+        ctx[0]->generated_code(ctx[0]);
     }
 
     cn_implode_scratchpad<ALGO, MEM, false>(reinterpret_cast<__m128i*>(ctx[0]->memory), reinterpret_cast<__m128i*>(ctx[0]->state));

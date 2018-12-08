@@ -5,9 +5,15 @@ if (WITH_ASM AND NOT XMRIG_ARM AND CMAKE_SIZEOF_VOID_P EQUAL 8)
         enable_language(ASM_MASM)
 
         if (MSVC_TOOLSET_VERSION GREATER_EQUAL 141)
-            set(XMRIG_ASM_FILE "src/crypto/asm/cnv2_main_loop.asm")
+            set(XMRIG_ASM_FILE
+                "src/crypto/asm/cnv2_main_loop.asm"
+                "src/crypto/asm/CryptonightR_template.asm"
+            )
         else()
-            set(XMRIG_ASM_FILE "src/crypto/asm/win64/cnv2_main_loop.asm")
+            set(XMRIG_ASM_FILE
+                "src/crypto/asm/win64/cnv2_main_loop.asm"
+                "src/crypto/asm/win64/CryptonightR_template.asm"
+            )
         endif()
 
         set_property(SOURCE ${XMRIG_ASM_FILE} PROPERTY ASM_MASM)

@@ -59,11 +59,15 @@ public:
     static void init(bool enabled);
     static void release(cryptonight_ctx **ctx, size_t count, MemInfo &info);
 
+    static void FlushInstructionCache(void* p, size_t size);
+
     static inline bool isHugepagesAvailable() { return (m_flags & HugepagesAvailable) != 0; }
 
 private:
     static void allocate(MemInfo &info, bool enabled);
     static void release(MemInfo &info);
+
+    static void* allocate_executable_memory(size_t size);
 
     static int m_flags;
     static bool m_enabled;

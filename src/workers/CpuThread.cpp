@@ -64,7 +64,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
     assert(variant >= VARIANT_0 && variant < VARIANT_MAX);
 
 #   ifndef XMRIG_NO_ASM
-    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 3;
+    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 4;
 #   else
     constexpr const size_t count = VARIANT_MAX * 10 * 3;
 #   endif
@@ -264,7 +264,8 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
 #       ifndef XMRIG_NO_ASM
         cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
         cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_RYZEN>,
-        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>
+        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
+        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
 #       endif
     };
 
@@ -456,13 +457,18 @@ size_t xmrig::CpuThread::fnIndex(Algo algorithm, AlgoVariant av, Variant variant
 
     constexpr const size_t offset = VARIANT_MAX * 10 * 3;
 
-    if (algorithm == CRYPTONIGHT && variant == VARIANT_2) {
-        if (av == AV_SINGLE) {
-            return offset + assembly - 2;
-        }
+    if (algorithm == CRYPTONIGHT) {
+        if (variant == VARIANT_2) {
+            if (av == AV_SINGLE) {
+                return offset + assembly - 2;
+            }
 
-        if (av == AV_DOUBLE) {
-            return offset + 2;
+            if (av == AV_DOUBLE) {
+                return offset + 2;
+            }
+        }
+        else if (variant == VARIANT_4) {
+            return offset + 3;
         }
     }
 #   endif

@@ -29,10 +29,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+struct cryptonight_ctx;
+typedef void(*cn_mainloop_fun)(cryptonight_ctx *ctx);
 
 struct cryptonight_ctx {
     alignas(16) uint8_t state[224];
     alignas(16) uint8_t *memory;
+    cn_mainloop_fun generated_code;
+    uint64_t generated_code_height;
 };
 
 

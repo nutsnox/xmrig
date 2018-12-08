@@ -52,6 +52,8 @@ MemInfo Mem::create(cryptonight_ctx **ctx, xmrig::Algo algorithm, size_t count)
     for (size_t i = 0; i < count; ++i) {
         cryptonight_ctx *c = static_cast<cryptonight_ctx *>(_mm_malloc(sizeof(cryptonight_ctx), 4096));
         c->memory          = info.memory + (i * cn_select_memory(algorithm));
+        c->generated_code  = reinterpret_cast<cn_mainloop_fun>(allocate_executable_memory(4096));
+        c->generated_code_height = (uint64_t)(-1);
 
         ctx[i] = c;
     }
