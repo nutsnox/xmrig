@@ -25,6 +25,7 @@
 
 
 #include <thread>
+#include <sstream>
 
 
 #include "crypto/CryptoNight_test.h"
@@ -54,7 +55,8 @@ bool MultiWorker<N>::selfTest()
     using namespace xmrig;
 
     if (m_thread->algorithm() == CRYPTONIGHT) {
-        return verify(VARIANT_0,   test_output_v0)  &&
+        return verify2(VARIANT_4,  test_input_R) &&
+               verify(VARIANT_0,   test_output_v0)  &&
                verify(VARIANT_1,   test_output_v1)  &&
                verify(VARIANT_2,   test_output_v2)  &&
                verify(VARIANT_XTL, test_output_xtl) &&
@@ -104,7 +106,7 @@ void MultiWorker<N>::start()
                 storeStats();
             }
 
-            m_thread->fn(m_state.job.algorithm().variant())(m_state.blob, m_state.job.size(), m_hash, m_ctx);
+            m_thread->fn(m_state.job.algorithm().variant())(m_state.blob, m_state.job.size(), m_hash, m_ctx, m_state.job.height());
 
             for (size_t i = 0; i < N; ++i) {
                 if (*reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24) < m_state.job.target()) {
@@ -145,8 +147,69 @@ bool MultiWorker<N>::verify(xmrig::Variant variant, const uint8_t *referenceValu
         return false;
     }
 
-    func(test_input, 76, m_hash, m_ctx);
+    func(test_input, 76, m_hash, m_ctx, 0);
     return memcmp(m_hash, referenceValue, sizeof m_hash) == 0;
+}
+
+
+template<size_t N>
+bool MultiWorker<N>::verify2(xmrig::Variant variant, const char *test_data)
+{
+
+    xmrig::CpuThread::cn_hash_fun func = m_thread->fn(variant);
+    if (!func) {
+        return false;
+    }
+
+    std::stringstream s(test_data);
+    std::string expected_hex;
+    std::string input_hex;
+    uint64_t height;
+    while (!s.eof())
+    {
+        uint8_t referenceValue[N * 32];
+        uint8_t input[N * 256];
+        
+        s >> expected_hex;
+        s >> input_hex;
+        s >> height;
+
+        if ((expected_hex.length() != 64) || (input_hex.length() > 512))
+        {
+            return false;
+        }
+
+        bool err = false;
+
+        for (int i = 0; i < 32; ++i)
+        {
+            referenceValue[i] = (hf_hex2bin(expected_hex[i * 2], err) << 4) + hf_hex2bin(expected_hex[i * 2 + 1], err);
+        }
+
+        const size_t input_len = input_hex.length() / 2;
+        for (int i = 0; i < input_len; ++i)
+        {
+            input[i] = (hf_hex2bin(input_hex[i * 2], err) << 4) + hf_hex2bin(input_hex[i * 2 + 1], err);
+        }
+
+        if (err)
+        {
+            return false;
+        }
+
+        for (int i = 1; i < N; ++i)
+        {
+            memcpy(input + i * input_len, input, input_len);
+            memcpy(referenceValue + i * 32, referenceValue, 32);
+        }
+
+        func(input, input_len, m_hash, m_ctx, height);
+        if (memcmp(m_hash, referenceValue, sizeof m_hash) != 0)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 

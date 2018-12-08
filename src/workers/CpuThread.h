@@ -59,7 +59,7 @@ public:
 
     CpuThread(size_t index, Algo algorithm, AlgoVariant av, Multiway multiway, int64_t affinity, int priority, bool softAES, bool prefetch, Assembly assembly);
 
-    typedef void (*cn_hash_fun)(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx **ctx);
+    typedef void (*cn_hash_fun)(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx **ctx, uint64_t height);
 
     static bool isSoftAES(AlgoVariant av);
     static cn_hash_fun fn(Algo algorithm, AlgoVariant av, Variant variant, Assembly assembly);
