@@ -187,7 +187,7 @@ bool MultiWorker<N>::verify2(xmrig::Variant variant, const char *test_data)
         }
 
         const size_t input_len = input_hex.length() / 2;
-        for (int i = 0; i < input_len; ++i)
+        for (size_t i = 0; i < input_len; ++i)
         {
             input[i] = (hf_hex2bin(input_hex[i * 2], err) << 4) + hf_hex2bin(input_hex[i * 2 + 1], err);
         }
@@ -197,7 +197,7 @@ bool MultiWorker<N>::verify2(xmrig::Variant variant, const char *test_data)
             return false;
         }
 
-        for (int i = 1; i < N; ++i)
+        for (size_t i = 1; i < N; ++i)
         {
             memcpy(input + i * input_len, input, input_len);
             memcpy(referenceValue + i * 32, referenceValue, 32);
