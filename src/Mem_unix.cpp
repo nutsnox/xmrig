@@ -25,7 +25,6 @@
 
 #include <stdlib.h>
 #include <sys/mman.h>
-#include <asm/cachectl.h>
 
 
 #include "common/log/Log.h"
@@ -93,14 +92,14 @@ void Mem::release(MemInfo &info)
 void* Mem::allocate_executable_memory(size_t size)
 {
 #   if defined(__APPLE__)
-    return mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0)
+    return mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0);
 #   else
-    return mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0)
+    return mmap(0, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 #   endif
 }
 
 
 void Mem::FlushInstructionCache(void* p, size_t size)
 {
-    cacheflush(reinterpret_cast<char*>(p), static_cast<int>(size), ICACHE);
+    __builtin___clear_cache(reinterpret_cast<char*>(p), reinterpret_cast<char*>(p) + size);
 }

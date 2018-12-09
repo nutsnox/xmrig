@@ -1,7 +1,9 @@
-#include <memory>
+#include <cstring>
 #include "crypto/variant4_random_math.h"
 #include "crypto/asm/CryptonightR_template.h"
 #include "Mem.h"
+
+#ifndef XMRIG_ARM
 
 static inline void add_code(uint8_t* &p, const void* p1, const void* p2)
 {
@@ -52,3 +54,5 @@ void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_co
 
     Mem::FlushInstructionCache(machine_code, p - p0);
 }
+
+#endif
