@@ -468,7 +468,9 @@ size_t xmrig::CpuThread::fnIndex(Algo algorithm, AlgoVariant av, Variant variant
             }
         }
         else if (variant == VARIANT_4) {
-            return offset + 3;
+            if (av == AV_SINGLE) {
+                return offset + 3;
+            }
         }
     }
 #   endif
