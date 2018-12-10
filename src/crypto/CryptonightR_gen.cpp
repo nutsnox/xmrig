@@ -14,13 +14,8 @@ static inline void add_code(uint8_t* &p, const void* p1, const void* p2)
     }
 }
 
-void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_code)
+static inline void add_random_math(uint8_t* &p, const V4_Instruction* code, int code_size)
 {
-    uint8_t* p0 = reinterpret_cast<uint8_t*>(machine_code);
-    uint8_t* p = p0;
-
-    add_code(p, CryptonightR_template_part1, CryptonightR_template_part2);
-
     uint32_t prev_rot_src = (uint32_t)(-1);
     const uint8_t* code1 = reinterpret_cast<const uint8_t*>(code);
 
@@ -47,10 +42,34 @@ void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_co
             *(p - 1) = code1[++i];
         }
     }
+}
 
+void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_code)
+{
+    uint8_t* p0 = reinterpret_cast<uint8_t*>(machine_code);
+    uint8_t* p = p0;
+
+    add_code(p, CryptonightR_template_part1, CryptonightR_template_part2);
+    add_random_math(p, code, code_size);
     add_code(p, CryptonightR_template_part2, CryptonightR_template_part3);
     *(int*)(p - 4) = static_cast<int>((((const uint8_t*)CryptonightR_template_mainloop) - ((const uint8_t*)CryptonightR_template_part1)) - (p - p0));
-    add_code(p, CryptonightR_template_part3, CryptonightR_instruction0);
+    add_code(p, CryptonightR_template_part3, CryptonightR_template_end);
+
+    Mem::FlushInstructionCache(machine_code, p - p0);
+}
+
+void v4_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code)
+{
+    uint8_t* p0 = reinterpret_cast<uint8_t*>(machine_code);
+    uint8_t* p = p0;
+
+    add_code(p, CryptonightR_template_double_part1, CryptonightR_template_double_part2);
+    add_random_math(p, code, code_size);
+    add_code(p, CryptonightR_template_double_part2, CryptonightR_template_double_part3);
+    add_random_math(p, code, code_size);
+    add_code(p, CryptonightR_template_double_part3, CryptonightR_template_double_part4);
+    *(int*)(p - 4) = static_cast<int>((((const uint8_t*)CryptonightR_template_double_mainloop) - ((const uint8_t*)CryptonightR_template_double_part1)) - (p - p0));
+    add_code(p, CryptonightR_template_double_part4, CryptonightR_template_double_end);
 
     Mem::FlushInstructionCache(machine_code, p - p0);
 }

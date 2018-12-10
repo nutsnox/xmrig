@@ -30,13 +30,16 @@
 #include <stdint.h>
 
 struct cryptonight_ctx;
-typedef void(*cn_mainloop_fun)(cryptonight_ctx *ctx);
+typedef void(*cn_mainloop_fun)(cryptonight_ctx*);
+typedef void(*cn_mainloop_double_fun)(cryptonight_ctx*, cryptonight_ctx*);
 
 struct cryptonight_ctx {
     alignas(16) uint8_t state[224];
     alignas(16) uint8_t *memory;
     cn_mainloop_fun generated_code;
+    cn_mainloop_double_fun generated_code_double;
     uint64_t generated_code_height;
+    uint64_t generated_code_double_height;
 };
 
 

@@ -572,6 +572,7 @@ extern "C" void cnv2_mainloop_ivybridge_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_mainloop_ryzen_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_double_mainloop_sandybridge_asm(cryptonight_ctx* ctx0, cryptonight_ctx* ctx1);
 void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_code);
+void v4_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code);
 
 template<xmrig::Algo ALGO, xmrig::Variant VARIANT, xmrig::Assembly ASM>
 inline void cryptonight_single_hash_asm(const uint8_t *__restrict__ input, size_t size, uint8_t *__restrict__ output, cryptonight_ctx **__restrict__ ctx, uint64_t height)
@@ -611,13 +612,25 @@ inline void cryptonight_double_hash_asm(const uint8_t *__restrict__ input, size_
 {
     constexpr size_t MEM = xmrig::cn_select_memory<ALGO>();
 
+    if ((VARIANT == xmrig::VARIANT_4) && (height != ctx[0]->generated_code_double_height)) {
+        V4_Instruction code[256];
+        const int code_size = v4_random_math_init(code, height);
+        v4_compile_code_double(code, code_size, ctx[0]->generated_code_double);
+        ctx[0]->generated_code_double_height = height;
+    }
+
     xmrig::keccak(input,        size, ctx[0]->state);
     xmrig::keccak(input + size, size, ctx[1]->state);
 
     cn_explode_scratchpad<ALGO, MEM, false>(reinterpret_cast<__m128i*>(ctx[0]->state), reinterpret_cast<__m128i*>(ctx[0]->memory));
     cn_explode_scratchpad<ALGO, MEM, false>(reinterpret_cast<__m128i*>(ctx[1]->state), reinterpret_cast<__m128i*>(ctx[1]->memory));
 
-    cnv2_double_mainloop_sandybridge_asm(ctx[0], ctx[1]);
+    if (VARIANT == xmrig::VARIANT_2) {
+        cnv2_double_mainloop_sandybridge_asm(ctx[0], ctx[1]);
+    }
+    else {
+        ctx[0]->generated_code_double(ctx[0], ctx[1]);
+    }
 
     cn_implode_scratchpad<ALGO, MEM, false>(reinterpret_cast<__m128i*>(ctx[0]->memory), reinterpret_cast<__m128i*>(ctx[0]->state));
     cn_implode_scratchpad<ALGO, MEM, false>(reinterpret_cast<__m128i*>(ctx[1]->memory), reinterpret_cast<__m128i*>(ctx[1]->state));
