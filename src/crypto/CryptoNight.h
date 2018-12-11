@@ -29,9 +29,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef _MSC_VER
+#define ABI_ATTRIBUTE
+#else
+#define ABI_ATTRIBUTE __attribute__((ms_abi))
+#endif
+
 struct cryptonight_ctx;
-typedef void(*cn_mainloop_fun)(cryptonight_ctx*);
-typedef void(*cn_mainloop_double_fun)(cryptonight_ctx*, cryptonight_ctx*);
+typedef void(*cn_mainloop_fun)(cryptonight_ctx*) ABI_ATTRIBUTE;
+typedef void(*cn_mainloop_double_fun)(cryptonight_ctx*, cryptonight_ctx*) ABI_ATTRIBUTE;
 
 struct cryptonight_ctx {
     alignas(16) uint8_t state[224];
