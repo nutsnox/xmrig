@@ -295,7 +295,6 @@ CryptonightR_template_double_mainloop:
 	lea	r9, QWORD PTR [rcx+rsi]
 	xor	esi, 16
 
-	; Random math 1 begin
 	movq xmm0, rsp
 	movq xmm1, rsi
 	movq xmm2, rdi
@@ -334,7 +333,6 @@ CryptonightR_template_double_part2:
 	movq r15, xmm12
 	movq rdx, xmm13
 	mov rcx, [rsp+80]
-	; Random math 1 end
 
 	mov rbx, r8
 	mov	rax, r8
@@ -376,7 +374,6 @@ CryptonightR_template_double_part2:
 	mov	r8, QWORD PTR [r10+rcx]
 	mov	r9, QWORD PTR [r10+rcx+8]
 
-	; Random math 2 begin
 	movq xmm0, rsp
 	movq xmm1, rbx
 	movq xmm2, rsi
@@ -416,7 +413,6 @@ CryptonightR_template_double_part3:
 	movq rbp, xmm12
 	movq r15, xmm13
 	mov rcx, [rsp+72]
-	; Random math 2 end
 
 	mov rax, r8
 	mul	rdi

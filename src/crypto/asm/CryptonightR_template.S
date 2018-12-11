@@ -518,7 +518,7 @@ PUBLIC CryptonightR_instruction_mov254
 PUBLIC CryptonightR_instruction_mov255
 PUBLIC CryptonightR_instruction_mov256
 
-INCLUDE CryptonightR_template.inc
+#include "CryptonightR_template.inc"
 
 CryptonightR_instruction0:
 	imul	ebx, ebx
