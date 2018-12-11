@@ -529,8 +529,6 @@ extern "C"
 	void CryptonightR_instruction_mov256();
 }
 
-typedef void(*void_func)();
-
 const void_func instructions[257] = {
 	CryptonightR_instruction0,
 	CryptonightR_instruction1,

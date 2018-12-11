@@ -53,11 +53,15 @@ MemInfo Mem::create(cryptonight_ctx **ctx, xmrig::Algo algorithm, size_t count)
         cryptonight_ctx *c = static_cast<cryptonight_ctx *>(_mm_malloc(sizeof(cryptonight_ctx), 4096));
         c->memory          = info.memory + (i * cn_select_memory(algorithm));
 
-        uint8_t* p = reinterpret_cast<uint8_t*>(allocate_executable_memory(8192));
+        uint8_t* p = reinterpret_cast<uint8_t*>(allocate_executable_memory(0x4000));
         c->generated_code  = reinterpret_cast<cn_mainloop_fun>(p);
-        c->generated_code_double = reinterpret_cast<cn_mainloop_double_fun>(p + 4096);
+        c->generated_code64 = reinterpret_cast<cn_mainloop_fun>(p + 0x1000);
+        c->generated_code_double = reinterpret_cast<cn_mainloop_double_fun>(p + 0x2000);
+        c->generated_code64_double = reinterpret_cast<cn_mainloop_double_fun>(p + 0x3000);
         c->generated_code_height = (uint64_t)(-1);
+        c->generated_code64_height = (uint64_t)(-1);
         c->generated_code_double_height = (uint64_t)(-1);
+        c->generated_code64_double_height = (uint64_t)(-1);
 
         ctx[i] = c;
     }

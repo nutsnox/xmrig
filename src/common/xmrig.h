@@ -69,6 +69,7 @@ enum Variant {
     VARIANT_RTO  = 7,  // Modified CryptoNight variant 1 (Arto only)
     VARIANT_2    = 8,  // CryptoNight variant 2
     VARIANT_4    = 9,  // CryptoNightR
+    VARIANT_4_64 = 10, // CryptoNightR, 64 bit
     VARIANT_MAX
 };
 

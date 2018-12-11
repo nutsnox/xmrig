@@ -88,6 +88,49 @@ static inline void v4_random_math(const struct V4_Instruction* code, int code_si
 	}
 }
 
+static inline void v4_64_random_math(const struct V4_Instruction* code, int code_size, uint64_t* r)
+{
+	for (int i = 0; i < code_size; ++i)
+	{
+		struct V4_Instruction op = code[i];
+		const uint64_t dst = r[op.dst_index];
+		const uint64_t src = r[op.src_index];
+		uint64_t shift;
+
+		switch (op.opcode)
+		{
+		case MUL1:
+		case MUL2:
+		case MUL3:
+			r[op.dst_index] = dst * src;
+			break;
+
+		case ADD:
+			// 3-way addition: a = a + b + C where C is next code byte (signed)
+			r[op.dst_index] = dst + src + ((const int8_t*)code)[++i];
+			break;
+
+		case SUB:
+			r[op.dst_index] = dst - src;
+			break;
+
+		case ROR:
+			shift = src & 63;
+			r[op.dst_index] = (dst >> shift) | (dst << (64 - shift));
+			break;
+
+		case ROL:
+			shift = src & 63;
+			r[op.dst_index] = (dst << shift) | (dst >> (64 - shift));
+			break;
+
+		case XOR:
+			r[op.dst_index] = dst ^ src;
+			break;
+		}
+	}
+}
+
 // Generates as many random math operations as possible with given latency and ALU restrictions
 static inline int v4_random_math_init(struct V4_Instruction* code, const uint64_t height)
 {

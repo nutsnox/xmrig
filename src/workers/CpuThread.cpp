@@ -64,7 +64,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
     assert(variant >= VARIANT_0 && variant < VARIANT_MAX);
 
 #   ifndef XMRIG_NO_ASM
-    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 5;
+    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 7;
 #   else
     constexpr const size_t count = VARIANT_MAX * 10 * 3;
 #   endif
@@ -162,6 +162,17 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         cryptonight_quad_hash<CRYPTONIGHT,   true,  VARIANT_4>,
         cryptonight_penta_hash<CRYPTONIGHT,  true,  VARIANT_4>,
 
+        cryptonight_single_hash<CRYPTONIGHT, false, VARIANT_4_64>,
+        cryptonight_double_hash<CRYPTONIGHT, false, VARIANT_4_64>,
+        cryptonight_single_hash<CRYPTONIGHT, true,  VARIANT_4_64>,
+        cryptonight_double_hash<CRYPTONIGHT, true,  VARIANT_4_64>,
+        cryptonight_triple_hash<CRYPTONIGHT, false, VARIANT_4_64>,
+        cryptonight_quad_hash<CRYPTONIGHT,   false, VARIANT_4_64>,
+        cryptonight_penta_hash<CRYPTONIGHT,  false, VARIANT_4_64>,
+        cryptonight_triple_hash<CRYPTONIGHT, true,  VARIANT_4_64>,
+        cryptonight_quad_hash<CRYPTONIGHT,   true,  VARIANT_4_64>,
+        cryptonight_penta_hash<CRYPTONIGHT,  true,  VARIANT_4_64>,
+
 #       ifndef XMRIG_NO_AEON
         cryptonight_single_hash<CRYPTONIGHT_LITE, false, VARIANT_0>,
         cryptonight_double_hash<CRYPTONIGHT_LITE, false, VARIANT_0>,
@@ -193,7 +204,9 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_RTO
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_2
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4_64
 #       else
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
@@ -249,7 +262,9 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_RTO
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_2
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4_64
 #       else
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
@@ -267,6 +282,8 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
         cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
         cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
+        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_4_64, ASM_RYZEN>,
+        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_4_64, ASM_RYZEN>,
 #       endif
     };
 
@@ -475,6 +492,15 @@ size_t xmrig::CpuThread::fnIndex(Algo algorithm, AlgoVariant av, Variant variant
 
             if (av == AV_DOUBLE) {
                 return offset + 4;
+            }
+        }
+        else if (variant == VARIANT_4_64) {
+            if (av == AV_SINGLE) {
+                return offset + 5;
+            }
+
+            if (av == AV_DOUBLE) {
+                return offset + 6;
             }
         }
     }

@@ -43,9 +43,13 @@ struct cryptonight_ctx {
     alignas(16) uint8_t state[224];
     alignas(16) uint8_t *memory;
     cn_mainloop_fun generated_code;
+    cn_mainloop_fun generated_code64;
     cn_mainloop_double_fun generated_code_double;
+    cn_mainloop_double_fun generated_code64_double;
     uint64_t generated_code_height;
+    uint64_t generated_code64_height;
     uint64_t generated_code_double_height;
+    uint64_t generated_code64_double_height;
 };
 
 
