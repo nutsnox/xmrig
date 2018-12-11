@@ -582,7 +582,7 @@ inline void cryptonight_single_hash_asm(const uint8_t *__restrict__ input, size_
     if ((VARIANT == xmrig::VARIANT_4) && (height != ctx[0]->generated_code_height)) {
         V4_Instruction code[256];
         const int code_size = v4_random_math_init(code, height);
-        v4_compile_code(code, code_size, ctx[0]->generated_code);
+        v4_compile_code(code, code_size, reinterpret_cast<void*>(ctx[0]->generated_code));
         ctx[0]->generated_code_height = height;
     }
 
@@ -615,7 +615,7 @@ inline void cryptonight_double_hash_asm(const uint8_t *__restrict__ input, size_
     if ((VARIANT == xmrig::VARIANT_4) && (height != ctx[0]->generated_code_double_height)) {
         V4_Instruction code[256];
         const int code_size = v4_random_math_init(code, height);
-        v4_compile_code_double(code, code_size, ctx[0]->generated_code_double);
+        v4_compile_code_double(code, code_size, reinterpret_cast<void*>(ctx[0]->generated_code_double));
         ctx[0]->generated_code_double_height = height;
     }
 

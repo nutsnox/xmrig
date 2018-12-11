@@ -5,11 +5,11 @@
 
 #ifndef XMRIG_ARM
 
-static inline void add_code(uint8_t* &p, const void* p1, const void* p2)
+static inline void add_code(uint8_t* &p, void (*p1)(), void (*p2)())
 {
     const ptrdiff_t size = reinterpret_cast<const uint8_t*>(p2) - reinterpret_cast<const uint8_t*>(p1);
     if (size > 0) {
-        memcpy(p, p1, size);
+        memcpy(p, reinterpret_cast<void*>(p1), size);
         p += size;
     }
 }
