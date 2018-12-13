@@ -5,6 +5,7 @@
  * Copyright 2014-2016 Wolf9466    <https://github.com/OhGodAPet>
  * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
  * Copyright 2017-2018 XMR-Stak    <https://github.com/fireice-uk>, <https://github.com/psychocrypt>
+ * Copyright 2018      SChernykh   <https://github.com/SChernykh>
  * Copyright 2016-2018 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -64,7 +65,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
     assert(variant >= VARIANT_0 && variant < VARIANT_MAX);
 
 #   ifndef XMRIG_NO_ASM
-    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 7;
+    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 8;
 #   else
     constexpr const size_t count = VARIANT_MAX * 10 * 3;
 #   endif
@@ -279,6 +280,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
 #       ifndef XMRIG_NO_ASM
         cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
         cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_RYZEN>,
+        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_BULLDOZER>,
         cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
         cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
         cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
@@ -482,25 +484,25 @@ size_t xmrig::CpuThread::fnIndex(Algo algorithm, AlgoVariant av, Variant variant
             }
 
             if (av == AV_DOUBLE) {
-                return offset + 2;
+                return offset + 3;
             }
         }
         else if (variant == VARIANT_4) {
             if (av == AV_SINGLE) {
-                return offset + 3;
+                return offset + 4;
             }
 
             if (av == AV_DOUBLE) {
-                return offset + 4;
+                return offset + 5;
             }
         }
         else if (variant == VARIANT_4_64) {
             if (av == AV_SINGLE) {
-                return offset + 5;
+                return offset + 6;
             }
 
             if (av == AV_DOUBLE) {
-                return offset + 6;
+                return offset + 7;
             }
         }
     }
