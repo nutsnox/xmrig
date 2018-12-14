@@ -29,6 +29,7 @@
 
 
 #include "crypto/CryptoNight_test.h"
+#include "common/log/Log.h"
 #include "workers/CpuThread.h"
 #include "workers/MultiWorker.h"
 #include "workers/Workers.h"
@@ -111,7 +112,11 @@ void MultiWorker<N>::start()
 
             for (size_t i = 0; i < N; ++i) {
                 if (*reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24) < m_state.job.target()) {
+#ifdef XMRIG_TEST_CRYPTONIGHT_R
+                    LOG_NOTICE("Share found (test mode, not submitted)");
+#else
                     Workers::submit(JobResult(m_state.job.poolId(), m_state.job.id(), m_state.job.clientId(), *nonce(i), m_hash + (i * 32), m_state.job.diff(), m_state.job.algorithm()));
+#endif
                 }
 
                 *nonce(i) += 1;

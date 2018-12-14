@@ -1,5 +1,5 @@
 {
-    "algo": "cryptonight",
+    "algo": "cryptonight/r",
     "api": {
         "port": 0,
         "access-token": null,
@@ -15,15 +15,15 @@
     "colors": true,
     "cpu-affinity": null,
     "cpu-priority": null,
-    "donate-level": 5,
+    "donate-level": 1,
     "huge-pages": true,
     "hw-aes": null,
     "log-file": null,
     "max-cpu-usage": 75,
     "pools": [
         {
-            "url": "donate.v2.xmrig.com:3333",
-            "user": "YOUR_WALLET_ADDRESS",
+            "url": "killallasics.moneroworld.com:5555",
+            "user": "9v4vTVwqZzfjCFyPi7b9Uv1hHntJxycC4XvRyEscqwtq8aycw5xGpTxFyasurgf2KRBfbdAJY4AVcemL1JCegXU4EZfMtaz",
             "pass": "x",
             "rig-id": null,
             "nicehash": false,
@@ -37,7 +37,9 @@
     "retries": 5,
     "retry-pause": 5,
     "safe": false,
-    "threads": null,
+    "threads": [
+        { "low_power_mode": 1, "affine_to_cpu": 0, "asm": true },
+    ],
     "user-agent": null,
     "watch": false
 }
