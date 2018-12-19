@@ -9,6 +9,7 @@ option(WITH_DEBUG_LOG "Enable debug log output" OFF)
 option(WITH_TLS       "Enable OpenSSL support" ON)
 option(WITH_ASM       "Enable ASM PoW implementations" ON)
 option(BUILD_STATIC   "Build static binary" OFF)
+option(TEST_CN_R      "Test mode for Cryptonight R" ON)
 
 include (CheckIncludeFile)
 include (cmake/cpu.cmake)
@@ -175,7 +176,9 @@ endif()
 
 add_definitions(/D__STDC_FORMAT_MACROS)
 add_definitions(/DUNICODE)
-add_definitions(/DXMRIG_TEST_CRYPTONIGHT_R)
+if (TEST_CN_R)
+    add_definitions(/DXMRIG_TEST_CRYPTONIGHT_R)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
