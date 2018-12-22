@@ -9,7 +9,7 @@ option(WITH_DEBUG_LOG "Enable debug log output" OFF)
 option(WITH_TLS       "Enable OpenSSL support" ON)
 option(WITH_ASM       "Enable ASM PoW implementations" ON)
 option(BUILD_STATIC   "Build static binary" OFF)
-option(TEST_CN_R      "Test mode for Cryptonight R" ON)
+option(TEST_CN_R      "Test mode for Cryptonight R" OFF)
 
 include (CheckIncludeFile)
 include (cmake/cpu.cmake)
