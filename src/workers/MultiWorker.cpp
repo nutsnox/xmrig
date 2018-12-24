@@ -56,9 +56,14 @@ bool MultiWorker<N>::selfTest()
     using namespace xmrig;
 
     if (m_thread->algorithm() == CRYPTONIGHT) {
-        return verify2(VARIANT_4,  test_input_R) &&
-               verify2(VARIANT_4_64, test_input_R_64) &&
-               verify(VARIANT_0,   test_output_v0)  &&
+        if (!verify2(VARIANT_4, test_input_R) || !verify2(VARIANT_4_64, test_input_R_64)) {
+#ifndef XMRIG_TEST_CRYPTONIGHT_R
+            return false;
+#else
+            LOG_WARN("CryptonightR self-test failed");
+#endif
+        }
+        return verify(VARIANT_0,   test_output_v0)  &&
                verify(VARIANT_1,   test_output_v1)  &&
                verify(VARIANT_2,   test_output_v2)  &&
                verify(VARIANT_XTL, test_output_xtl) &&
