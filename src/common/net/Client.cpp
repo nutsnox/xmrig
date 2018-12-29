@@ -341,7 +341,6 @@ bool Client::parseJob(const rapidjson::Value &params, int *code)
     if (params.HasMember("algo")) {
         job.setAlgorithm(params["algo"].GetString());
     }
-#endif
 
     if (params.HasMember("variant")) {
         const rapidjson::Value &variant = params["variant"];
@@ -353,6 +352,7 @@ bool Client::parseJob(const rapidjson::Value &params, int *code)
             job.setVariant(variant.GetString());
         }
     }
+#endif
 
     if (params.HasMember("height")) {
         const rapidjson::Value &variant = params["height"];
