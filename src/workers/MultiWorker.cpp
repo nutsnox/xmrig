@@ -166,7 +166,6 @@ bool MultiWorker<N>::verify(xmrig::Variant variant, const uint8_t *referenceValu
 template<size_t N>
 bool MultiWorker<N>::verify2(xmrig::Variant variant, const char *test_data)
 {
-
     xmrig::CpuThread::cn_hash_fun func = m_thread->fn(variant);
     if (!func) {
         return false;
