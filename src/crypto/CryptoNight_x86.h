@@ -6,7 +6,7 @@
  * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
  * Copyright 2017-2018 XMR-Stak    <https://github.com/fireice-uk>, <https://github.com/psychocrypt>
  * Copyright 2018      Lee Clagett <https://github.com/vtnerd>
- * Copyright 2018      SChernykh   <https://github.com/SChernykh>
+ * Copyright 2018-2019 SChernykh   <https://github.com/SChernykh>
  * Copyright 2016-2019 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -574,6 +574,12 @@ extern "C" void cnv2_mainloop_ivybridge_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_mainloop_ryzen_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_mainloop_bulldozer_asm(cryptonight_ctx *ctx);
 extern "C" void cnv2_double_mainloop_sandybridge_asm(cryptonight_ctx* ctx0, cryptonight_ctx* ctx1);
+
+extern xmrig::CpuThread::cn_mainloop_fun cn_half_mainloop_ivybridge_asm;
+extern xmrig::CpuThread::cn_mainloop_fun cn_half_mainloop_ryzen_asm;
+extern xmrig::CpuThread::cn_mainloop_fun cn_half_mainloop_bulldozer_asm;
+extern xmrig::CpuThread::cn_mainloop_double_fun cn_half_double_mainloop_sandybridge_asm;
+
 void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM);
 void v4_64_compile_code(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM);
 void v4_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM);
@@ -610,6 +616,17 @@ inline void cryptonight_single_hash_asm(const uint8_t *__restrict__ input, size_
         }
         else {
             cnv2_mainloop_bulldozer_asm(ctx[0]);
+        }
+    }
+    else if (VARIANT == xmrig::VARIANT_HALF) {
+        if (ASM == xmrig::ASM_INTEL) {
+            cn_half_mainloop_ivybridge_asm(ctx[0]);
+        }
+        else if (ASM == xmrig::ASM_RYZEN) {
+            cn_half_mainloop_ryzen_asm(ctx[0]);
+        }
+        else {
+            cn_half_mainloop_bulldozer_asm(ctx[0]);
         }
     }
     else if (VARIANT == xmrig::VARIANT_4) {
@@ -652,6 +669,9 @@ inline void cryptonight_double_hash_asm(const uint8_t *__restrict__ input, size_
 
     if (VARIANT == xmrig::VARIANT_2) {
         cnv2_double_mainloop_sandybridge_asm(ctx[0], ctx[1]);
+    }
+    else if (VARIANT == xmrig::VARIANT_HALF) {
+        cn_half_double_mainloop_sandybridge_asm(ctx[0], ctx[1]);
     }
     else if (VARIANT == xmrig::VARIANT_4) {
         ctx[0]->generated_code_double(ctx[0], ctx[1]);
