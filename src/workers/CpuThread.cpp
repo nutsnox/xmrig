@@ -128,15 +128,47 @@ bool xmrig::CpuThread::isSoftAES(AlgoVariant av)
 }
 
 
+#ifndef XMRIG_NO_ASM
+template<xmrig::Algo algo, xmrig::Variant variant>
+static inline void add_asm_func(xmrig::CpuThread::cn_hash_fun(&asm_func_map)[xmrig::ALGO_MAX][xmrig::AV_MAX][xmrig::VARIANT_MAX][xmrig::ASM_MAX])
+{
+    asm_func_map[algo][xmrig::AV_SINGLE][variant][xmrig::ASM_INTEL] = cryptonight_single_hash_asm<algo, variant, xmrig::ASM_INTEL>;
+    asm_func_map[algo][xmrig::AV_SINGLE][variant][xmrig::ASM_RYZEN] = cryptonight_single_hash_asm<algo, variant, xmrig::ASM_RYZEN>;
+    asm_func_map[algo][xmrig::AV_SINGLE][variant][xmrig::ASM_BULLDOZER] = cryptonight_single_hash_asm<algo, variant, xmrig::ASM_BULLDOZER>;
+
+    asm_func_map[algo][xmrig::AV_DOUBLE][variant][xmrig::ASM_INTEL] = cryptonight_double_hash_asm<algo, variant, xmrig::ASM_INTEL>;
+    asm_func_map[algo][xmrig::AV_DOUBLE][variant][xmrig::ASM_RYZEN] = cryptonight_double_hash_asm<algo, variant, xmrig::ASM_RYZEN>;
+    asm_func_map[algo][xmrig::AV_DOUBLE][variant][xmrig::ASM_BULLDOZER] = cryptonight_double_hash_asm<algo, variant, xmrig::ASM_BULLDOZER>;
+}
+#endif
+
 xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant av, Variant variant, Assembly assembly)
 {
     assert(variant >= VARIANT_0 && variant < VARIANT_MAX);
 
 #   ifndef XMRIG_NO_ASM
-    constexpr const size_t count = VARIANT_MAX * 10 * 3 + 8;
-#   else
-    constexpr const size_t count = VARIANT_MAX * 10 * 3;
+    if (assembly == ASM_AUTO) {
+        assembly = Cpu::info()->assembly();
+    }
+
+    static cn_hash_fun asm_func_map[ALGO_MAX][AV_MAX][VARIANT_MAX][ASM_MAX] = {};
+    static bool asm_func_map_initialized = false;
+
+    if (!asm_func_map_initialized) {
+        add_asm_func<CRYPTONIGHT, VARIANT_2>(asm_func_map);
+        add_asm_func<CRYPTONIGHT, VARIANT_HALF>(asm_func_map);
+        add_asm_func<CRYPTONIGHT, VARIANT_4>(asm_func_map);
+        add_asm_func<CRYPTONIGHT, VARIANT_4_64>(asm_func_map);
+        asm_func_map_initialized = true;
+    }
+
+    cn_hash_fun fun = asm_func_map[algorithm][av][variant][assembly];
+    if (fun) {
+        return fun;
+    }
 #   endif
+
+    constexpr const size_t count = VARIANT_MAX * 10 * 3;
 
     static const cn_hash_fun func_table[count] = {
         cryptonight_single_hash<CRYPTONIGHT, false, VARIANT_0>,
@@ -283,7 +315,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_XAO
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_RTO
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_2
-        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_XTL2
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_HALF
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4_64
 #       else
@@ -343,7 +375,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_XAO
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_RTO
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_2
-        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_XTL2
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_HALF
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, // VARIANT_4_64
 #       else
@@ -360,24 +392,10 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
 #       endif
-#       ifndef XMRIG_NO_ASM
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_RYZEN>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_BULLDOZER>,
-        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_2, ASM_INTEL>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_HALF, ASM_INTEL>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_HALF, ASM_RYZEN>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_HALF, ASM_BULLDOZER>,
-        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_HALF, ASM_INTEL>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
-        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_4, ASM_RYZEN>,
-        cryptonight_single_hash_asm<CRYPTONIGHT, VARIANT_4_64, ASM_RYZEN>,
-        cryptonight_double_hash_asm<CRYPTONIGHT, VARIANT_4_64, ASM_RYZEN>,
-#       endif
     };
 
+    const size_t index = VARIANT_MAX * 10 * algorithm + 10 * variant + av - 1;
 #   ifndef NDEBUG
-    const size_t index = fnIndex(algorithm, av, variant, assembly);
     cn_hash_fun func = func_table[index];
 
     assert(index < sizeof(func_table) / sizeof(func_table[0]));
@@ -385,7 +403,7 @@ xmrig::CpuThread::cn_hash_fun xmrig::CpuThread::fn(Algo algorithm, AlgoVariant a
 
     return func;
 #   else
-    return func_table[fnIndex(algorithm, av, variant, assembly)];
+    return func_table[index];
 #   endif
 }
 
@@ -546,60 +564,4 @@ rapidjson::Value xmrig::CpuThread::toConfig(rapidjson::Document &doc) const
 #   endif
 
     return obj;
-}
-
-
-size_t xmrig::CpuThread::fnIndex(Algo algorithm, AlgoVariant av, Variant variant, Assembly assembly)
-{
-    const size_t index = VARIANT_MAX * 10 * algorithm + 10 * variant + av - 1;
-
-#   ifndef XMRIG_NO_ASM
-    if (assembly == ASM_AUTO) {
-        assembly = Cpu::info()->assembly();
-    }
-
-    if (assembly == ASM_NONE) {
-        return index;
-    }
-
-    constexpr const size_t offset = VARIANT_MAX * 10 * 3;
-    size_t extra_offset           = 0;
-
-    if (algorithm == CRYPTONIGHT && (variant == VARIANT_2 || variant == VARIANT_HALF)) {
-        if (variant == VARIANT_HALF) {
-            extra_offset += 4;
-        }
-
-    if (algorithm == CRYPTONIGHT) {
-        if (variant == VARIANT_2) {
-            if (av == AV_SINGLE) {
-                return offset + extra_offset + assembly - 2;
-            }
-
-            if (av == AV_DOUBLE) {
-                return offset + 3;
-            }
-        }
-        else if (variant == VARIANT_4) {
-            if (av == AV_SINGLE) {
-                return offset + 4;
-            }
-
-            if (av == AV_DOUBLE) {
-                return offset + 5 + extra_offset;
-            }
-        }
-        else if (variant == VARIANT_4_64) {
-            if (av == AV_SINGLE) {
-                return offset + 6;
-            }
-
-            if (av == AV_DOUBLE) {
-                return offset + 7;
-            }
-        }
-    }
-#   endif
-
-    return index;
 }

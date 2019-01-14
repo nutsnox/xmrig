@@ -84,7 +84,7 @@ void v4_compile_code(const V4_Instruction* code, int code_size, void* machine_co
     *(int*)(p - 4) = static_cast<int>((((const uint8_t*)CryptonightR_template_mainloop) - ((const uint8_t*)CryptonightR_template_part1)) - (p - p0));
     add_code(p, CryptonightR_template_part3, CryptonightR_template_end);
 
-    Mem::FlushInstructionCache(machine_code, p - p0);
+    Mem::flushInstructionCache(machine_code, p - p0);
 }
 
 void v4_64_compile_code(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
@@ -98,7 +98,7 @@ void v4_64_compile_code(const V4_Instruction* code, int code_size, void* machine
     *(int*)(p - 4) = static_cast<int>((((const uint8_t*)CryptonightR_64_template_mainloop) - ((const uint8_t*)CryptonightR_64_template_part1)) - (p - p0));
     add_code(p, CryptonightR_64_template_part3, CryptonightR_64_template_end);
 
-    Mem::FlushInstructionCache(machine_code, p - p0);
+    Mem::flushInstructionCache(machine_code, p - p0);
 }
 
 void v4_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
@@ -114,7 +114,7 @@ void v4_compile_code_double(const V4_Instruction* code, int code_size, void* mac
     *(int*)(p - 4) = static_cast<int>((((const uint8_t*)CryptonightR_template_double_mainloop) - ((const uint8_t*)CryptonightR_template_double_part1)) - (p - p0));
     add_code(p, CryptonightR_template_double_part4, CryptonightR_template_double_end);
 
-    Mem::FlushInstructionCache(machine_code, p - p0);
+    Mem::flushInstructionCache(machine_code, p - p0);
 }
 
 void v4_64_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
@@ -130,7 +130,7 @@ void v4_64_compile_code_double(const V4_Instruction* code, int code_size, void* 
     *(int*)(p - 4) = static_cast<int>((((const uint8_t*)CryptonightR_64_template_double_mainloop) - ((const uint8_t*)CryptonightR_64_template_double_part1)) - (p - p0));
     add_code(p, CryptonightR_64_template_double_part4, CryptonightR_64_template_double_end);
 
-    Mem::FlushInstructionCache(machine_code, p - p0);
+    Mem::flushInstructionCache(machine_code, p - p0);
 }
 
 #endif

@@ -98,8 +98,6 @@ protected:
     rapidjson::Value toConfig(rapidjson::Document &doc) const override;
 
 private:
-    static size_t fnIndex(Algo algorithm, AlgoVariant av, Variant variant, Assembly assembly);
-
     const Algo m_algorithm;
     const AlgoVariant m_av;
     const Assembly m_assembly;
