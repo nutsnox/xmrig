@@ -495,7 +495,7 @@ inline void cryptonight_single_hash(const uint8_t *__restrict__ input, size_t si
 
         lo = __umul128(idx0, cl, &hi);
 
-        if (IS_SHUFFLE) {
+        if (BASE == xmrig::VARIANT_2) {
             VARIANT2_SHUFFLE2(l0, idx0 & MASK, ax0, bx0, bx1, hi, lo);
         }
 
@@ -636,7 +636,7 @@ inline void cryptonight_double_hash(const uint8_t *__restrict__ input, size_t si
 
         lo = __umul128(idx0, cl, &hi);
 
-        if (IS_SHUFFLE) {
+        if (BASE == xmrig::VARIANT_2) {
             VARIANT2_SHUFFLE2(l0, idx0 & MASK, ax0, bx00, bx01, hi, lo);
         }
 
@@ -685,7 +685,7 @@ inline void cryptonight_double_hash(const uint8_t *__restrict__ input, size_t si
 
         lo = __umul128(idx1, cl, &hi);
 
-        if (IS_SHUFFLE) {
+        if (BASE == xmrig::VARIANT_2) {
             VARIANT2_SHUFFLE2(l1, idx1 & MASK, ax1, bx10, bx11, hi, lo);
         }
 
@@ -721,7 +721,7 @@ inline void cryptonight_double_hash(const uint8_t *__restrict__ input, size_t si
                 idx1 = d ^ q;
             }
         }
-        if (IS_SHUFFLE) {
+        if (BASE == xmrig::VARIANT_2) {
             bx01 = bx00;
             bx11 = bx10;
         }
