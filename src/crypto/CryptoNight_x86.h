@@ -896,16 +896,18 @@ inline void cryptonight_double_hash(const uint8_t *__restrict__ input, size_t si
 
 #define CN_STEP4(part, a, b0, b1, c, l, mc, ptr, idx)   \
     if (BASE == xmrig::VARIANT_2) {                     \
-        VARIANT2_INTEGER_MATH(part, cl##part, c);       \
-    } else if ((VARIANT == xmrig::VARIANT_4) || (VARIANT == xmrig::VARIANT_4_64)) { \
-        const uint64_t al = _mm_cvtsi128_si64(a);   \
-        const uint64_t ah = _mm_cvtsi128_si64(_mm_srli_si128(a, 8)); \
-        VARIANT4_RANDOM_MATH(part, al, ah, cl##part, b0, b1); \
-    }                                               \
-    lo = __umul128(idx, cl##part, &hi);             \
-    if (BASE == xmrig::VARIANT_2) {                                   \
+        if ((VARIANT == xmrig::VARIANT_4) || (VARIANT == xmrig::VARIANT_4_64)) { \
+            const uint64_t al = _mm_cvtsi128_si64(a);   \
+            const uint64_t ah = _mm_cvtsi128_si64(_mm_srli_si128(a, 8)); \
+            VARIANT4_RANDOM_MATH(part, al, ah, cl##part, b0, b1); \
+        } else {                                        \
+            VARIANT2_INTEGER_MATH(part, cl##part, c);   \
+        }                                               \
+    }                                                   \
+    lo = __umul128(idx, cl##part, &hi);                 \
+    if (BASE == xmrig::VARIANT_2) {                     \
         VARIANT2_SHUFFLE2(l, idx & MASK, a, b0, b1, hi, lo); \
-    } \
+    }                                                   \
     a = _mm_add_epi64(a, _mm_set_epi64x(lo, hi));       \
                                                         \
     if (BASE == xmrig::VARIANT_1) {                     \
