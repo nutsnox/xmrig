@@ -580,7 +580,7 @@ void cn_gpu_inner_arm(const uint8_t *spad, uint8_t *lpad);
 
 
 template<xmrig::Algo ALGO, bool SOFT_AES, xmrig::Variant VARIANT>
-inline void cryptonight_single_hash_gpu(const uint8_t *__restrict__ input, size_t size, uint8_t *__restrict__ output, cryptonight_ctx **__restrict__ ctx)
+inline void cryptonight_single_hash_gpu(const uint8_t *__restrict__ input, size_t size, uint8_t *__restrict__ output, cryptonight_ctx **__restrict__ ctx, uint64_t height)
 {
     constexpr size_t MASK         = xmrig::CRYPTONIGHT_GPU_MASK;
     constexpr size_t ITERATIONS   = xmrig::cn_select_iter<ALGO, VARIANT>();
