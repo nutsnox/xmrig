@@ -158,7 +158,7 @@
   uint32_t r##part[8]; \
   uint64_t r64_##part[8]; \
   struct V4_Instruction code##part[256]; \
-  if (VARIANT == xmrig::VARIANT_4) { \
+  if ((VARIANT == xmrig::VARIANT_WOW) || (VARIANT == xmrig::VARIANT_4)) { \
     r##part[0] = (uint32_t)(h##part[12]); \
     r##part[1] = (uint32_t)(h##part[12] >> 32); \
     r##part[2] = (uint32_t)(h##part[13]); \
@@ -172,7 +172,7 @@
   v4_random_math_init(code##part, height);
 
 #define VARIANT4_RANDOM_MATH(part, al, ah, cl, bx0, bx1) \
-  if (VARIANT == xmrig::VARIANT_4) { \
+  if ((VARIANT == xmrig::VARIANT_WOW) || (VARIANT == xmrig::VARIANT_4)) { \
     cl ^= (r##part[0] + r##part[1]) | ((uint64_t)(r##part[2] + r##part[3]) << 32); \
     r##part[4] = static_cast<uint32_t>(al); \
     r##part[5] = static_cast<uint32_t>(ah); \

@@ -56,12 +56,19 @@ bool MultiWorker<N>::selfTest()
     using namespace xmrig;
 
     if (m_thread->algorithm() == CRYPTONIGHT) {
-        if (!verify2(VARIANT_4, test_input_R) || !verify2(VARIANT_4_64, test_input_R_64)) {
-            LOG_WARN("CryptonightR self-test failed");
-#ifndef XMRIG_TEST_CRYPTONIGHT_R
+        if (!verify2(VARIANT_WOW, test_input_WOW)) {
+            LOG_WARN("CryptonightR (Wownero) self-test failed");
             return false;
-#endif
         }
+        if (!verify2(VARIANT_4, test_input_R)) {
+            LOG_WARN("CryptonightR self-test failed");
+            return false;
+        }
+        if (!verify2(VARIANT_4_64, test_input_R_64)) {
+            LOG_WARN("CryptonightR (64-bit) self-test failed");
+            return false;
+        }
+
         const bool rc = verify(VARIANT_0,    test_output_v0)  &&
                         verify(VARIANT_1,    test_output_v1)  &&
                         verify(VARIANT_2,    test_output_v2)  &&
@@ -133,11 +140,7 @@ void MultiWorker<N>::start()
 
             for (size_t i = 0; i < N; ++i) {
                 if (*reinterpret_cast<uint64_t*>(m_hash + (i * 32) + 24) < m_state.job.target()) {
-#ifdef XMRIG_TEST_CRYPTONIGHT_R
-                    LOG_NOTICE("Share found (test mode, not submitted)");
-#else
                     Workers::submit(JobResult(m_state.job.poolId(), m_state.job.id(), m_state.job.clientId(), *nonce(i), m_hash + (i * 32), m_state.job.diff(), m_state.job.algorithm()));
-#endif
                 }
 
                 *nonce(i) += 1;
