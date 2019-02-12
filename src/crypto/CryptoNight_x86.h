@@ -664,12 +664,6 @@ void v4_compile_code_double(const V4_Instruction* code, int code_size, void* mac
 void v4_64_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM);
 
 template<xmrig::Variant VARIANT>
-int cn_r_random_math_init(struct V4_Instruction* code, const uint64_t height)
-{
-    return v4_random_math_init(code, height);
-}
-
-template<xmrig::Variant VARIANT>
 void cn_r_compile_code(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
 {
     v4_compile_code(code, code_size, machine_code, ASM);
@@ -700,7 +694,7 @@ inline void cryptonight_single_hash_asm(const uint8_t *__restrict__ input, size_
 
     if (xmrig::cn_is_cryptonight_r<VARIANT>() && !ctx[0]->generated_code_data.match(VARIANT, height)) {
         V4_Instruction code[256];
-        const int code_size = cn_r_random_math_init<VARIANT>(code, height);
+        const int code_size = v4_random_math_init<VARIANT>(code, height);
         cn_r_compile_code<VARIANT>(code, code_size, reinterpret_cast<void*>(ctx[0]->generated_code), ASM);
         ctx[0]->generated_code_data.variant = VARIANT;
         ctx[0]->generated_code_data.height = height;
@@ -759,7 +753,7 @@ inline void cryptonight_double_hash_asm(const uint8_t *__restrict__ input, size_
 
     if (xmrig::cn_is_cryptonight_r<VARIANT>() && !ctx[0]->generated_code_double_data.match(VARIANT, height)) {
         V4_Instruction code[256];
-        const int code_size = cn_r_random_math_init<VARIANT>(code, height);
+        const int code_size = v4_random_math_init<VARIANT>(code, height);
         cn_r_compile_code_double<VARIANT>(code, code_size, reinterpret_cast<void*>(ctx[0]->generated_code_double), ASM);
         ctx[0]->generated_code_double_data.variant = VARIANT;
         ctx[0]->generated_code_double_data.height = height;
