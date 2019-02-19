@@ -700,6 +700,30 @@ void cn_r_compile_code_double<xmrig::VARIANT_WOW>(const V4_Instruction* code, in
     wow_compile_code_double(code, code_size, machine_code, ASM);
 }
 
+template<xmrig::Variant VARIANT>
+void cn_r_compile_code(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
+{
+    v4_compile_code(code, code_size, machine_code, ASM);
+}
+
+template<xmrig::Variant VARIANT>
+void cn_r_compile_code_double(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
+{
+    v4_compile_code_double(code, code_size, machine_code, ASM);
+}
+
+template<>
+void cn_r_compile_code<xmrig::VARIANT_WOW>(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
+{
+    wow_compile_code(code, code_size, machine_code, ASM);
+}
+
+template<>
+void cn_r_compile_code_double<xmrig::VARIANT_WOW>(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
+{
+    wow_compile_code_double(code, code_size, machine_code, ASM);
+}
+
 template<>
 void cn_r_compile_code<xmrig::VARIANT_4_64>(const V4_Instruction* code, int code_size, void* machine_code, xmrig::Assembly ASM)
 {
