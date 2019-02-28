@@ -574,7 +574,7 @@ inline void cryptonight_single_hash(const uint8_t *__restrict__ input, size_t si
     uint64_t* h0 = reinterpret_cast<uint64_t*>(ctx[0]->state);
 
 #ifndef XMRIG_NO_ASM
-    if (SOFT_AES && xmrig::cn_is_cryptonight_r<VARIANT>())
+    if (SOFT_AES && ((VARIANT == xmrig::VARIANT_WOW) || (VARIANT == xmrig::VARIANT_4)))
     {
         if (!ctx[0]->generated_code_data.match(VARIANT, height)) {
             V4_Instruction code[256];
