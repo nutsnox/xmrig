@@ -12,7 +12,7 @@ enum V4_Settings
 	TOTAL_LATENCY = 15 * 3,
 	
 	// Always generate at least 60 instructions
-	NUM_INSTRUCTIONS_MIN = 60,
+	NUM_INSTRUCTIONS_MIN = 69,
 
 	// Never generate more than 70 instructions (final RET instruction doesn't count here)
 	NUM_INSTRUCTIONS_MAX = 70,
@@ -23,7 +23,7 @@ enum V4_Settings
 
 	// Total available ALUs
 	// Modern CPUs have 4 ALUs, but we use only 3 because random math executes together with other main loop code
-	ALU_COUNT = 3,
+	ALU_COUNT = 4,
 };
 
 enum V4_InstructionList
@@ -253,7 +253,8 @@ static int v4_random_math_init(struct V4_Instruction* code, const uint64_t heigh
 
 		// Generate random code to achieve minimal required latency for our abstract CPU
 		// Try to get this latency for all 4 registers
-		while (((latency[0] < TOTAL_LATENCY) || (latency[1] < TOTAL_LATENCY) || (latency[2] < TOTAL_LATENCY) || (latency[3] < TOTAL_LATENCY)) && (num_retries < 64))
+		//while (((latency[0] < TOTAL_LATENCY) || (latency[1] < TOTAL_LATENCY) || (latency[2] < TOTAL_LATENCY) || (latency[3] < TOTAL_LATENCY)) && (num_retries < 64))
+		while (num_retries < 64)
 		{
 			// Fail-safe to guarantee loop termination
 			++total_iterations;
